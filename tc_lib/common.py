@@ -5,6 +5,7 @@ from mplfinance.original_flavor import candlestick2_ochl
 import matplotlib.pyplot as plt
 import pandas as pd
 
+#get_coindata : fname으로 받은 곳의 데이터를 가져와 그래프로 나타내는 함수, 정확히는 im2col의 역할을 함.
 def get_coindata(fname, seq_len, dimension):
     df = pd.read_csv(fname, names=['time','open', 'high', 'low', 'close','volume', 'value'])
     df.fillna(0)
