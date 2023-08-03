@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+import time
 
-x = list(range(10))
-y = list(range(10))
+tot_sum = 0
+a = range(10)
+for i in tqdm(a):
+    time.sleep(0.1)
+    tot_sum += i
 
-a = plt.plot(x, y)
-
-print(type(a))
+print(tot_sum)
