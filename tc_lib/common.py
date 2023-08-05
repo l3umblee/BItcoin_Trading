@@ -49,7 +49,7 @@ def get_coindata(fname, seq_len, dimension):
         starting = c_["close"].iloc[-2]
         endvalue = c_["close"].iloc[-1]
         if endvalue > starting :
-            label = 1 #label1은 결국 오른 것
+            label = 1 #label = 1은 결국 오른 것
         else :
             label = 0 #그렇지 않은 것
         labels.append(label)
@@ -134,6 +134,7 @@ def buy_coin(access_key, secret_key):
     upbit = pyupbit.Upbit(access_key, secret_key)
     
     KRW = get_mybalance(access_key, secret_key, "KRW") #현재 KRW 원화 가져오기
+    KRW = KRW*0.9995 #수수료 제외
     order_book = pyupbit.get_orderbook("KRW-BTC")
     bids_ask = order_book['orderbook_units']
     bid_ask = bids_ask[0]
@@ -144,7 +145,7 @@ def buy_coin(access_key, secret_key):
 
     ret = upbit.buy_market_order("KRW-BTC", KRW, unit)
     print("KRW : ", KRW, ", unit : ", unit)
-
+    print(upbit.get_order("KRW-BTC"))
     #uuid = ret['uuid']
 
     #return uuid, unit
@@ -164,16 +165,5 @@ def sell_coin(access_key, secret_key, unit):
     #return uuid, unit
     #return unit
 
-# def predict_data():
-#     if search_model() == False:
-#         os.system('train_model.py')
-
-#     model = load_model('my_model.h5', compile=False)
-#     dimension = 48
-
-#     x_input = get_cur_data(dimension)
-#     x_input = x_input.reshape(1, dimension, dimension, 3)
-
-#     y_input = model.predict(x_input)
-
-#     return y_input
+def search_lowvalue():
+    pass

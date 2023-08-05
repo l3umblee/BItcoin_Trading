@@ -40,7 +40,7 @@ train_len = int(len(figures)*0.7)
 batch_size = 16
 
 num_iters=  train_len // batch_size
-num_epochs = 100
+num_epochs = 250
 
 x_train, y_train = shuffle_dataset(figures[:train_len],labels[:train_len], train_len, dimension)
 x_test, y_test = shuffle_dataset(figures[train_len:], labels[train_len:], len(labels) - train_len, dimension)
