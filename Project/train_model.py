@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from tc_lib.common import *
 from tensorflow import keras
+from keras.optimizers import *
 
 inputs = "dataset/bitcoindata.csv"
 #saveDatatoCSV에서 data를 받아올 때 사용한 params 중 count와 같은 값이어야 함.
@@ -23,17 +24,17 @@ model.add(keras.layers.Conv2D(32, kernel_size=3, activation='relu', padding='sam
 model.add(keras.layers.MaxPooling2D(2))
 model.add(keras.layers.Conv2D(48, kernel_size=3, activation='relu', padding='same'))
 model.add(keras.layers.MaxPooling2D(2))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.25))
 
 model.add(keras.layers.Conv2D(64, kernel_size=3, activation='relu', padding='same'))
 model.add(keras.layers.MaxPooling2D(2))
 model.add(keras.layers.Conv2D(96, kernel_size=3, activation='relu', padding='same'))
 model.add(keras.layers.MaxPooling2D(2))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.25))
 
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(256, activation='relu'))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.25))
 model.add(keras.layers.Dense(1, activation='sigmoid')) #이진분류
 
 train_len = int(len(figures)*0.7)
@@ -45,12 +46,12 @@ num_epochs = 250
 x_train, y_train = shuffle_dataset(figures[:train_len],labels[:train_len], train_len, dimension)
 x_test, y_test = shuffle_dataset(figures[train_len:], labels[train_len:], len(labels) - train_len, dimension)
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(lr=1.0e-4), loss='binary_crossentropy', metrics=['accuracy'])
 
 model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs)
 
 model.save('my_model.h5', overwrite=True)
 
-predicted = model.predict(x_test)
+#predicted = model.predict(x_test)
 
-print(predicted)
+#print(predicted)

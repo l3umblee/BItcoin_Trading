@@ -119,7 +119,6 @@ def get_cur_data(dimension=48):
     figs = fig_np[:,:,:3]
     plt.close(fig_final)
 
-    print(figs.shape)
     return figs
 
 #get_KRW : 현재 잔고에 있는 원화를 조회 
@@ -135,22 +134,41 @@ def buy_coin(access_key, secret_key):
     
     KRW = get_mybalance(access_key, secret_key, "KRW") #현재 KRW 원화 가져오기
     KRW = KRW*0.9995 #수수료 제외
+    
     order_book = pyupbit.get_orderbook("KRW-BTC")
     bids_ask = order_book['orderbook_units']
     bid_ask = bids_ask[0]
-    sell_price = bid_ask['bid_price']
+    
+    ask_price = bid_ask['ask_price'] #매도 호가
+    candle, cur_price = get_candle_cur() #candle과 현재가
+    open_price = candle.iat[0, 0] #candle 중 시가 
 
-    #매수 수량 = 현재 원화 잔고 / 매도 호가 (분할 매수에 관한 건은 나중에)
+    #매도호가와 시가 중 낮은 것 결정
+    if ask_price < open_price:
+        print("choose ask_price!")
+        sell_price = ask_price
+    else:
+        print("choose open_price!")
+        sell_price = open_price
+
+    #매수 수량 결정
     unit = KRW/sell_price
 
-    ret = upbit.buy_market_order("KRW-BTC", KRW, unit)
+    ret = upbit.buy_limit_order("KRW-BTC", sell_price, unit)
+    ret = upbit.get_order("KRW-BTC")
+    uuid = ret[0]['uuid']
+
     print("KRW : ", KRW, ", unit : ", unit)
-    print(upbit.get_order("KRW-BTC"))
-    #uuid = ret['uuid']
+    print(upbit.get_order("KRW-BTC")) #[]로 표시될 경우 주문 이미 체결
+    
+    return unit, uuid, sell_price
 
-    #return uuid, unit
-    return unit
-
+#sell_coin : 매도 주문용인데, 높은 값으로 매도 주문을 걸 것임 
+'''
+가격 하락을 예측하므로 현재에서 바로 팔아버림
+-> 코인의 변동성이 크기 때문에 현재 가격들 중 가장 큰 가격을 선택할 것임. 
+(sell_market_order는 매수 호가 이므로 바로 매도 가능하지만 너무 낮은 가격에 팔아버림)
+'''
 def sell_coin(access_key, secret_key, unit):
     upbit = pyupbit.Upbit(access_key, secret_key)
     cur_coins = get_mybalance(access_key, secret_key, "KRW-BTC") #현재 비트코인 잔고 확인
@@ -158,12 +176,39 @@ def sell_coin(access_key, secret_key, unit):
         print("no coin to cell...")
         return
     
-    ret = upbit.sell_market_order("KRW-BTC", cur_coins, unit)
+    order_book = pyupbit.get_orderbook("KRW-BTC")
+    bids_ask = order_book['orderbook_units']
+    bid_ask = bids_ask[0]
+    candle, cur_price = get_candle_cur()
+
+    bid_price = bid_ask['bid_price'] #매수호가
+    high_price = candle.iat[0, 1] #고가
+
+    if bid_price > high_price:
+        sell_price = bid_price
+        print("choose bid_price!")
+    else:
+        sell_price = high_price
+        print("choose high_price!")    
     
-    #uuid = ret['uuid']
+    ret = upbit.sell_market_order("KRW-BTC", sell_price, unit)
+    uuid = ret[0]['uuid']
+    return uuid
 
-    #return uuid, unit
-    #return unit
+#get_candle_cur : 시가, 종가, 저가, 고가, 현재가를 받아올 수 있음 / 현재가를 제외한 나머지는 candle에 담겨있음
+def get_candle_cur():
+    cur_time = datetime.now()
+    params = {"ticker":"KRW-BTC", "interval":"minute3", "count":1, "to":cur_time}
+    candle = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=cur_time)
+    cur_price = pyupbit.get_current_price("KRW-BTC")
+    return candle, cur_price
 
-def search_lowvalue():
-    pass
+#adjust_price : 주문 가격을 조정 (주문취소 -> 매수/매도)
+def adjust_price(access_key, secret_key, uuid, unit, case):
+    if case == 0: #더 내려갈 것으로 추정 -> 시장가로 빨리 매도
+        upbit = pyupbit.Upbit(access_key, secret_key)
+        upbit.cancel_order(uuid) #주문 취소
+
+        upbit.sell_market_order("KRW-BTC", unit)
+    else: #더 오를 것으로 추정 -> 매도 주문 취소
+        return
