@@ -9,8 +9,12 @@ access_key = ""
 secret_key = ""
 
 upbit = pyupbit.Upbit(access_key, secret_key)
-ret = upbit.get_order("KRW-BTC")
+ret = upbit.get_order("KRW-IQ")
 print(ret)
-uuid = ret[0]['uuid']
-price = ret[0]['price']
+if ret == []:
+    print("jere")
+else:
+    uuid = ret[0]['uuid']
+    upbit.cancel_order(uuid)
+    price = ret[0]['price']
 print(price)

@@ -41,12 +41,12 @@ train_len = int(len(figures)*0.7)
 batch_size = 16
 
 num_iters=  train_len // batch_size
-num_epochs = 250
+num_epochs = 150
 
 x_train, y_train = shuffle_dataset(figures[:train_len],labels[:train_len], train_len, dimension)
 x_test, y_test = shuffle_dataset(figures[train_len:], labels[train_len:], len(labels) - train_len, dimension)
 
-model.compile(optimizer=Adam(lr=1.0e-4), loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=1.0e-4), loss='binary_crossentropy', metrics=['accuracy'])
 
 model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs)
 

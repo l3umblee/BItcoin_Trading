@@ -40,6 +40,10 @@ print("Start time : ", datetime.now())
 print(get_mybalance(access_key, secret_key))
 print("-"*30)
 
+cur_balance = get_mybalance(access_key, secret_key, "KRW")
+if cur_balance <= 1.0:
+    isAsk = True
+
 #ver.2 -> 조금의 이득을 보면 무조건 팔기
 while True:
     ans = predict_data(model)
@@ -87,8 +91,8 @@ while True:
 
             print("<<Try to buy coin>>")
             print("Current time : ", datetime.now())
-            isAsk = True
     
+    isAsk = check_conclusion(access_key, secret_key, uuid)
     print(get_mybalance(access_key, secret_key))
     print("-"*30)
 
@@ -98,3 +102,4 @@ while True:
     if stop_time >= 60*60: #60분 동안 투자
         sell_coin(access_key, secret_key, unit)
         break
+print("End Program")

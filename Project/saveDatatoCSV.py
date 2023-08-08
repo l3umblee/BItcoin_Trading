@@ -12,7 +12,7 @@ INTERVAL_MINUTE = 18
 df = DataFrame()
 
 while (tmp_date != finish_date):
-    params = {"ticker":"KRW-BTC", "interval":"minute3", "count":6, "to":tmp_date}
+    params = {"ticker":"KRW-IQ", "interval":"minute3", "count":6, "to":tmp_date}
     tmp_df = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=params['to'])
     df = concat([tmp_df, df]) 
     tmp_date = tmp_date - datetime.timedelta(minutes=INTERVAL_MINUTE)

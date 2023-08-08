@@ -91,7 +91,7 @@ def get_cur_data(dimension=48):
     print("Get current data...")
     cur_time = datetime.now()
     
-    params = {"ticker":"KRW-BTC", "interval":"minute3", "count":5, "to":cur_time}
+    params = {"ticker":"KRW-IQ", "interval":"minute3", "count":5, "to":cur_time}
     candles = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=cur_time)
 
     plt.style.use("dark_background")
@@ -135,7 +135,7 @@ def buy_coin(access_key, secret_key):
     KRW = get_mybalance(access_key, secret_key, "KRW") #현재 KRW 원화 가져오기
     KRW = KRW*0.9995 #수수료 제외
     
-    order_book = pyupbit.get_orderbook("KRW-BTC")
+    order_book = pyupbit.get_orderbook("KRW-IQ")
     bids_ask = order_book['orderbook_units']
     bid_ask = bids_ask[0]
     
@@ -154,12 +154,15 @@ def buy_coin(access_key, secret_key):
     #매수 수량 결정
     unit = KRW/sell_price
 
-    ret = upbit.buy_limit_order("KRW-BTC", sell_price, unit)
-    ret = upbit.get_order("KRW-BTC")
-    uuid = ret[0]['uuid']
+    ret = upbit.buy_limit_order("KRW-IQ", sell_price, unit)
+    ret = upbit.get_order("KRW-IQ")
+    if ret == []:
+        uuid = ""
+    else:  
+        uuid = ret[0]['uuid']
 
     print("KRW : ", KRW, ", unit : ", unit)
-    print(upbit.get_order("KRW-BTC")) #[]로 표시될 경우 주문 이미 체결
+    print(upbit.get_order("KRW-IQ")) #[]로 표시될 경우 주문 이미 체결
     
     return unit, uuid, sell_price
 
@@ -171,12 +174,12 @@ def buy_coin(access_key, secret_key):
 '''
 def sell_coin(access_key, secret_key, unit):
     upbit = pyupbit.Upbit(access_key, secret_key)
-    cur_coins = get_mybalance(access_key, secret_key, "KRW-BTC") #현재 비트코인 잔고 확인
+    cur_coins = get_mybalance(access_key, secret_key, "KRW-IQ") #현재 비트코인 잔고 확인
     if cur_coins <= 0:
         print("no coin to cell...")
         return
     
-    order_book = pyupbit.get_orderbook("KRW-BTC")
+    order_book = pyupbit.get_orderbook("KRW-IQ")
     bids_ask = order_book['orderbook_units']
     bid_ask = bids_ask[0]
     candle, cur_price = get_candle_cur()
@@ -191,16 +194,20 @@ def sell_coin(access_key, secret_key, unit):
         sell_price = high_price
         print("choose high_price!")    
     
-    ret = upbit.sell_market_order("KRW-BTC", sell_price, unit)
-    uuid = ret[0]['uuid']
+    ret = upbit.sell_market_order("KRW-IQ", sell_price, unit)
+    if ret == []:
+        uuid = ""
+    else:  
+        uuid = ret[0]['uuid']
+        
     return uuid
 
 #get_candle_cur : 시가, 종가, 저가, 고가, 현재가를 받아올 수 있음 / 현재가를 제외한 나머지는 candle에 담겨있음
 def get_candle_cur():
     cur_time = datetime.now()
-    params = {"ticker":"KRW-BTC", "interval":"minute3", "count":1, "to":cur_time}
+    params = {"ticker":"KRW-IQ", "interval":"minute3", "count":1, "to":cur_time}
     candle = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=cur_time)
-    cur_price = pyupbit.get_current_price("KRW-BTC")
+    cur_price = pyupbit.get_current_price("KRW-IQ")
     return candle, cur_price
 
 #adjust_price : 주문 가격을 조정 (주문취소 -> 매수/매도)
@@ -209,6 +216,15 @@ def adjust_price(access_key, secret_key, uuid, unit, case):
         upbit = pyupbit.Upbit(access_key, secret_key)
         upbit.cancel_order(uuid) #주문 취소
 
-        upbit.sell_market_order("KRW-BTC", unit)
+        upbit.sell_market_order("KRW-IQ", unit)
     else: #더 오를 것으로 추정 -> 매도 주문 취소
         return
+
+#check_conclusion : 주문이 체결되었는지 확인    
+def check_conclusion(access_key, secret_key, uuid):
+    upbit = pyupbit.Upbit(access_key, secret_key)
+    ret = upbit.get_order(uuid)
+    if ret == []:
+        return True
+    else:
+        return False
