@@ -10,11 +10,7 @@ secret_key = ""
 
 upbit = pyupbit.Upbit(access_key, secret_key)
 ret = upbit.get_order("KRW-IQ")
-print(ret)
-if ret == []:
-    print("jere")
-else:
-    uuid = ret[0]['uuid']
-    upbit.cancel_order(uuid)
-    price = ret[0]['price']
-print(price)
+cur_balance = get_mybalance(access_key, secret_key, "KRW")
+D = get_coinbalance(access_key, secret_key, "IQ")
+print(D[0]["IQ"])
+print(cur_balance)

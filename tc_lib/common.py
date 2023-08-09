@@ -124,9 +124,10 @@ def get_cur_data(dimension=48):
 #get_KRW : 현재 잔고에 있는 원화를 조회 
 def get_mybalance(access_key, secret_key, ticker='KRW'):
     upbit = pyupbit.Upbit(access_key, secret_key)
-    print("현재",ticker, "조회: ",upbit.get_balance(ticker=ticker))
+    balance = upbit.get_balance(ticker=ticker)
+    print("현재",ticker, "조회: ", balance)
     
-    return upbit.get_balance(ticker=ticker)
+    return balance
 
 #buy_coin : 매수하는 함수 / 주문 취소 시 필요한 uuid와 수량 unit 반환
 def buy_coin(access_key, secret_key):
@@ -156,14 +157,15 @@ def buy_coin(access_key, secret_key):
 
     ret = upbit.buy_limit_order("KRW-IQ", sell_price, unit)
     ret = upbit.get_order("KRW-IQ")
-    if ret == []:
-        uuid = ""
-    else:  
-        uuid = ret[0]['uuid']
 
     print("KRW : ", KRW, ", unit : ", unit)
     print(upbit.get_order("KRW-IQ")) #[]로 표시될 경우 주문 이미 체결
-    
+
+    if ret == []:
+        uuid = "Done"
+    else:  
+        uuid = ret[0]['uuid']
+
     return unit, uuid, sell_price
 
 #sell_coin : 매도 주문용인데, 높은 값으로 매도 주문을 걸 것임 
@@ -222,9 +224,23 @@ def adjust_price(access_key, secret_key, uuid, unit, case):
 
 #check_conclusion : 주문이 체결되었는지 확인    
 def check_conclusion(access_key, secret_key, uuid):
+    print("checking conclusion...")
+    if uuid == "Done":
+        return True
+
     upbit = pyupbit.Upbit(access_key, secret_key)
     ret = upbit.get_order(uuid)
+    print(ret)
     if ret == []:
         return True
     else:
         return False
+
+#get_coinbalance : 보유한 코인의 가격
+def get_coinbalance(access_key, secret_key):
+    upbit = pyupbit.Upbit(access_key, secret_key)
+    my_balances = upbit.get_balances()
+    print(len(my_balances))
+    price = my_balances[1]["avg_buy_price"]
+
+    return price

@@ -40,9 +40,14 @@ print("Start time : ", datetime.now())
 print(get_mybalance(access_key, secret_key))
 print("-"*30)
 
+#이미 주문이 들어간 경우 isAsk를 True로 표시
 cur_balance = get_mybalance(access_key, secret_key, "KRW")
 if cur_balance <= 1.0:
+    uuid = "Done"
     isAsk = True
+    sell_price = get_coinbalance(access_key, secret_key)
+    print(sell_price)
+    print("already buy!")
 
 #ver.2 -> 조금의 이득을 보면 무조건 팔기
 while True:
@@ -50,6 +55,7 @@ while True:
     coin_price = 0.0
 
     if isAsk: #이미 매수한 상황
+        print("already buy!")
         candle, cur_price = get_candle_cur()
         if cur_price > sell_price: #이득
             sell_coin(access_key, secret_key, unit)
@@ -61,6 +67,7 @@ while True:
             print("<<Try to sell coin>>")
 
     else: #아직 매수하지 않은 상황
+        print("not yet buy coin...")
         if (ans[0] == 1): #다음 3분봉에서 가격이 오를 것이라고 예상
             final_decision = True
 
@@ -93,6 +100,11 @@ while True:
             print("Current time : ", datetime.now())
     
     isAsk = check_conclusion(access_key, secret_key, uuid)
+    if isAsk:
+        print("order completed!")
+    else:
+        print("order not completed...")
+
     print(get_mybalance(access_key, secret_key))
     print("-"*30)
 
