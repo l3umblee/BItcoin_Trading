@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append(os.pardir)
 import pyupbit
-
+import matplotlib.pyplot as plt
 from tensorflow.python.keras.models import load_model
 from tc_lib.common import *
 
@@ -82,7 +82,7 @@ class TradingManager:
         if ret == []: #체결 완료
             self.uuid = ""
         else: # 미체결
-            self.uuid = ret['uuid']
+            self.uuid = ret[0]['uuid']
 
     #sell_coin : 코인을 매도 -> 시장가 매도
     def sell_coin(self):

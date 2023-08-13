@@ -56,15 +56,16 @@ while True:
             tradingManager.buy_coin()
             print("<<buy coin>>")
         else:
-            print("not buy, not cell")
+            print("not buy, not sell")
 
         cnt = 0
         tradingManager.show_balance()
         print(tradingManager.isAsk)
+        print(datetime.now())
         print("-"*30)
 
     stop_time = time.time() - start_time
-    if stop_time >= 30*60:
+    if stop_time >= 60*60:
         break
 
 print("End Program")

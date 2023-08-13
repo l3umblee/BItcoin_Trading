@@ -1,23 +1,28 @@
+import sys, os
+sys.path.append(os.pardir)
 import pyupbit
 import datetime
+import csv
+import time
+import pandas as pd
 from pandas import *
 
-start_date = datetime.datetime(2023, 8, 5, 0, 0, 0, 0)
-finish_date = datetime.datetime(2023, 7, 5, 0, 0, 0, 0)
+start_date = datetime.datetime(2023, 7, 12, 0, 0, 0, 0)
+finish_date = datetime.datetime(2023, 8, 12, 0, 0, 0, 0)
 tmp_date = start_date
 
-#3분봉을 6개씩 받아옴 / 다음의 데이터는 18분 뒤의 데이터를 받아와야 함.
 INTERVAL_MINUTE = 18
 
-df = DataFrame()
+file_path = "dataset/bitcoindata.csv"
+csv_file = open(file_path, mode='a', newline='')
+csv_writer = csv.writer(csv_file)
 
-while (tmp_date != finish_date):
+while tmp_date != finish_date:
     params = {"ticker":"KRW-IQ", "interval":"minute3", "count":6, "to":tmp_date}
     tmp_df = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=params['to'])
-    df = concat([tmp_df, df]) 
-    tmp_date = tmp_date - datetime.timedelta(minutes=INTERVAL_MINUTE)
+    time.sleep(0.1)
+    tmp_df.to_csv(csv_file, header=None)
 
-# params = {"ticker":"KRW-BTC", "interval":"minute10", "count":200, "to":tmp_date}
-# df = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=params['to'])
+    tmp_date = tmp_date + datetime.timedelta(minutes=INTERVAL_MINUTE)
 
-df.to_csv("dataset/bitcoindata.csv", header=None)
+csv_file.close()
