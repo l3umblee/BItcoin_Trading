@@ -14,11 +14,17 @@ tmp_date = start_date
 INTERVAL_MINUTE = 18
 
 file_path = "dataset/bitcoindata.csv"
+file_name = "bitcoindata.csv"
+
+files = os.listdir('dataset')
+if file_name in files:
+    os.remove(file_path)
+
 csv_file = open(file_path, mode='a', newline='')
 csv_writer = csv.writer(csv_file)
 
 while tmp_date != finish_date:
-    params = {"ticker":"KRW-IQ", "interval":"minute3", "count":6, "to":tmp_date}
+    params = {"ticker":"KRW-BTC", "interval":"minute3", "count":6, "to":tmp_date}
     tmp_df = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=params['to'])
     time.sleep(0.1)
     tmp_df.to_csv(csv_file, header=None)

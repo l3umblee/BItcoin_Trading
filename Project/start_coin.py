@@ -12,7 +12,7 @@ from tc_lib.common import *
 from tc_lib.BTCclass import *
 
 model = None
-ticker = "KRW-IQ"
+ticker = "KRW-BTC"
 if search_model() == False:
     os.system('train_model.py')
 
@@ -47,16 +47,24 @@ while True:
     time.sleep(1)
 
     if cnt == 180:
+        tradingManager.show_balance()
         isOk = trador.judge_coin()
-        
-        if tradingManager.isAsk and isOk == False: #매수한 상황, 내릴 것이라 판단
-            tradingManager.sell_coin()
-            print("<<sell coin>>")
-        elif tradingManager.isAsk == False and isOk: #매수하지 않은 상황, 오를 것이라 판단
+
+        if tradingManager.isAsk == False and isOk: #매수하지 않은 상황, 오를 것이라 판단
             tradingManager.buy_coin()
             print("<<buy coin>>")
-        else:
-            print("not buy, not sell")
+        elif tradingManager.isAsk:
+            tradingManager.sell_coin()
+            print("<<sell coin>>")
+            
+        # if tradingManager.isAsk and isOk == False: #매수한 상황, 내릴 것이라 판단
+        #     tradingManager.sell_coin()
+        #     print("<<sell coin>>")
+        # elif tradingManager.isAsk == False and isOk: #매수하지 않은 상황, 오를 것이라 판단
+        #     tradingManager.buy_coin()
+        #     print("<<buy coin>>")
+        # else:
+        #     print("not buy, not sell")
 
         cnt = 0
         tradingManager.show_balance()
@@ -65,7 +73,7 @@ while True:
         print("-"*30)
 
     stop_time = time.time() - start_time
-    if stop_time >= 60*60:
+    if stop_time >= 120*60:
         break
 
 print("End Program")

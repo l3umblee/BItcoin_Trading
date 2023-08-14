@@ -58,12 +58,12 @@ class TradingManager:
         KRW = self.get_mybalance("KRW")
         KRW = KRW * 0.9995 
 
-        order_book = pyupbit.get_orderbook("KRW-IQ")
+        order_book = pyupbit.get_orderbook(self.ticker)
         bids_ask = order_book['orderbook_units']
         bid_ask = bids_ask[0]
     
         ask_price = bid_ask['ask_price'] #매도 호가
-        candle, cur_price = get_candle_cur() #candle과 현재가
+        candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
         open_price = candle.iat[0, 0] #candle 중 시가 
 
         #매도호가와 시가 중 낮은 것 결정
@@ -76,10 +76,10 @@ class TradingManager:
 
         self.unit = KRW / self.sell_price
 
-        ret = self.upbit.buy_limit_order("KRW-IQ", self.sell_price, self.unit)
-        ret = self.upbit.get_order("KRW-IQ")
+        ret = self.upbit.buy_limit_order(self.ticker, self.sell_price, self.unit)
+        ret = self.upbit.get_order(self.ticker)
 
-        if ret == []: #체결 완료
+        if not ret: #체결 완료
             self.uuid = ""
         else: # 미체결
             self.uuid = ret[0]['uuid']
@@ -90,23 +90,20 @@ class TradingManager:
         if cur_coins <= 0:
             print("no coin to cell...")
             return
-        
-        order_book = pyupbit.get_orderbook("KRW-IQ")
-        bids_ask = order_book['orderbook_units']
-        bid_ask = bids_ask[0]
-    
-        bid_price = bid_ask['bid_price'] #매수 호가
-        candle, cur_price = get_candle_cur() #candle과 현재가
-        open_price = candle.iat[0, 0] #candle 중 시가
 
-        if bid_price > open_price:
-            self.sell_price = bid_price
-        else:
-            self.sell_price = open_price
+        candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
+        open_price = candle.iat[0, 0] #candle 중 시가
+        self.sell_price = open_price
+        
+        # high_price = candle.iat[0, 1]
+        # if high_price > open_price:
+        #     self.sell_price = high_price
+        # else:
+        #     self.sell_price = open_price
 
         ret = self.upbit.sell_limit_order(self.ticker, self.sell_price,self.unit)
         print(ret)
-        if ret == []:
+        if not ret:
             self.uuid = ""
         else:
             self.uuid = ret['uuid']
@@ -123,8 +120,8 @@ class TradingManager:
         balances = self.upbit.get_balances()
         print(balances)
         if len(balances) != 1: #원화말고 다른 것도 있음
-            self.unit = balances[1]['balance']
-            self.sell_price = balances[1]['avg_buy_price']
+            self.unit = balances[0]['balance']
+            self.sell_price = balances[0]['avg_buy_price']
             self.isAsk = True
         else:
             self.isAsk = False

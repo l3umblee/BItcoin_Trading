@@ -123,11 +123,11 @@ def get_cur_data(dimension=48):
 #time_delay
 
 #get_candle_cur : 시가, 종가, 저가, 고가, 현재가를 받아올 수 있음 / 현재가를 제외한 나머지는 candle에 담겨있음
-def get_candle_cur():
+def get_candle_cur(ticker):
     cur_time = datetime.now()
-    params = {"ticker":"KRW-IQ", "interval":"minute3", "count":1, "to":cur_time}
+    params = {"ticker":ticker, "interval":"minute3", "count":1, "to":cur_time}
     candle = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=cur_time)
-    cur_price = pyupbit.get_current_price("KRW-IQ")
+    cur_price = pyupbit.get_current_price(ticker)
     return candle, cur_price
 
 #get_coinbalance : 보유한 코인의 가격
