@@ -84,7 +84,7 @@ class TradingManager:
         else: # 미체결
             self.uuid = ret[0]['uuid']
 
-    #sell_coin : 코인을 매도 -> 시장가 매도
+    #sell_coin : 코인을 매도 -> 시가에 매도
     def sell_coin(self):
         cur_coins = self.get_mybalance(self.ticker)
         if cur_coins <= 0:
@@ -120,8 +120,10 @@ class TradingManager:
         balances = self.upbit.get_balances()
         print(balances)
         if len(balances) != 1: #원화말고 다른 것도 있음
-            self.unit = balances[0]['balance']
-            self.sell_price = balances[0]['avg_buy_price']
-            self.isAsk = True
+            for value in balances:
+                if value['currency'] != 'KRW':
+                    self.unit = value['balance']
+                    self.sell_price = value['avg_buy_price']
+                    self.isAsk = True
         else:
             self.isAsk = False

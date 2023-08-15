@@ -12,7 +12,7 @@ from tc_lib.common import *
 from tc_lib.BTCclass import *
 
 model = None
-ticker = "KRW-BTC"
+ticker = "KRW-KNC"
 if search_model() == False:
     os.system('train_model.py')
 
@@ -26,7 +26,12 @@ INTERVAL = 3
 
 current_time = datetime.now()
 if current_time.minute % 3 != 0:
-    tmp_time = current_time.replace(minute=(current_time.minute - current_time.minute % INTERVAL + INTERVAL)%60, second=0)
+    time_minute = (current_time.minute - current_time.minute % INTERVAL + INTERVAL)%60
+    if time_minute == 60:
+        tmp_time = current_time.replace(hour=(current_time.hour + 1), minute=0, second=0)
+    else:
+        tmp_time = current_time.replace(minute=time_minute, second=0)
+
     del_time = tmp_time - current_time
     sec = del_time.seconds
     print("Time Delay :", sec)
@@ -57,15 +62,6 @@ while True:
             tradingManager.sell_coin()
             print("<<sell coin>>")
             
-        # if tradingManager.isAsk and isOk == False: #매수한 상황, 내릴 것이라 판단
-        #     tradingManager.sell_coin()
-        #     print("<<sell coin>>")
-        # elif tradingManager.isAsk == False and isOk: #매수하지 않은 상황, 오를 것이라 판단
-        #     tradingManager.buy_coin()
-        #     print("<<buy coin>>")
-        # else:
-        #     print("not buy, not sell")
-
         cnt = 0
         tradingManager.show_balance()
         print(tradingManager.isAsk)
