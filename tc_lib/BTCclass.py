@@ -11,7 +11,7 @@ class TradeAI:
         self.model = model
         self.maj_data = list()
 
-    #predict_data : 30초 단위로 다음 3분봉에서 오를지 안 오를지 판단
+    #predict_data : 다음 봉이 오를지 판단
     def predict_data(self): 
         dimension = 48
 
@@ -28,7 +28,7 @@ class TradeAI:
         self.maj_data.clear()
         
         print("result:", result)
-        if result > 3:
+        if result > (len(self.maj_data)/2):
             return True
         else:
             return False
@@ -56,23 +56,25 @@ class TradingManager:
     #buy_coin : 코인을 매수
     def buy_coin(self):
         KRW = self.get_mybalance("KRW")
-        KRW = KRW * 0.9995 
+        KRW = KRW * 0.9
 
         order_book = pyupbit.get_orderbook(self.ticker)
         bids_ask = order_book['orderbook_units']
-        bid_ask = bids_ask[0]
-    
+        bid_ask = bids_ask[1] #한 단계 위의 매도 호가
         ask_price = bid_ask['ask_price'] #매도 호가
-        candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
-        open_price = candle.iat[0, 0] #candle 중 시가 
+        
+        # candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
+        # open_price = candle.iat[0, 0] #candle 중 시가 
 
         #매도호가와 시가 중 낮은 것 결정
-        if ask_price < open_price:
-            print("choose ask_price!")
-            self.sell_price = ask_price
-        else:
-            print("choose open_price!")
-            self.sell_price = open_price
+        # if ask_price < open_price:
+        #     print("choose ask_price!")
+        #     self.sell_price = ask_price
+        # else:
+        #     print("choose open_price!")
+        #     self.sell_price = open_price
+        
+        self.sell_price = ask_price
 
         self.unit = KRW / self.sell_price
 
@@ -91,20 +93,21 @@ class TradingManager:
             print("no coin to cell...")
             return
 
-        candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
-        open_price = candle.iat[0, 0] #candle 중 시가
-        self.sell_price = open_price
-        
-        # high_price = candle.iat[0, 1]
-        # if high_price > open_price:
-        #     self.sell_price = high_price
-        # else:
-        #     self.sell_price = open_price
+        order_book = pyupbit.get_orderbook(self.ticker)
+        bids_ask = order_book['orderbook_units']
+        bid_ask = bids_ask[1] #한 단계 아래의 매수 호가
+        ask_price = bid_ask['bid_price'] #매수 호가
+
+        self.sell_price = ask_price
+
+        # candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
+        # open_price = candle.iat[0, 0] #candle 중 시가
+        # self.sell_price = open_price
 
         ret = self.upbit.sell_limit_order(self.ticker, self.sell_price,self.unit)
         print(ret)
         if not ret:
-            self.uuid = ""
+            self.uuid = "" 
         else:
             self.uuid = ret['uuid']
 

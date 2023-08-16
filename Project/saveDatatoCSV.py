@@ -7,11 +7,11 @@ import time
 import pandas as pd
 from pandas import *
 
-start_date = datetime.datetime(2023, 7, 12, 0, 0, 0, 0)
-finish_date = datetime.datetime(2023, 8, 12, 0, 0, 0, 0)
+start_date = datetime.datetime(2023, 6, 15, 0, 0, 0, 0)
+finish_date = datetime.datetime(2023, 8, 15, 0, 0, 0, 0)
 tmp_date = start_date
 
-INTERVAL_MINUTE = 18
+INTERVAL_HOUR = 1
 
 ticker = "KRW-KNC"
 file_path = "dataset/bitcoindata.csv"
@@ -25,11 +25,11 @@ csv_file = open(file_path, mode='a', newline='')
 csv_writer = csv.writer(csv_file)
 
 while tmp_date != finish_date:
-    params = {"ticker":ticker, "interval":"minute3", "count":6, "to":tmp_date}
+    params = {"ticker":ticker, "interval":"minute10", "count":6, "to":tmp_date}
     tmp_df = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=params['to'])
     time.sleep(0.1)
     tmp_df.to_csv(csv_file, header=None)
 
-    tmp_date = tmp_date + datetime.timedelta(minutes=INTERVAL_MINUTE)
+    tmp_date = tmp_date + datetime.timedelta(hours=INTERVAL_HOUR)
 
 csv_file.close()

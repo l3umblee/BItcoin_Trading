@@ -4,7 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import pyupbit
-
+import pyautogui
+import random
+import time
 from tqdm import tqdm
 from mplfinance.original_flavor import candlestick2_ochl
 from datetime import datetime
@@ -138,3 +140,32 @@ def get_coinbalance(access_key, secret_key):
     price = my_balances[1]["avg_buy_price"]
 
     return price
+
+def prevent_off():
+    pyautogui.FAILSAFE = True
+    screenW, screenH = pyautogui.size()
+    temp_x, temp_y = pyautogui.position()
+    current_x, current_y = pyautogui.position()
+    if temp_x == current_x and temp_y == current_y:
+        ran_w = random.randint(1, screenW)
+        ran_h = random.randint(1, screenH)
+
+        pyautogui.moveTo(ran_w, ran_h, 0.3)
+        pyautogui.typewrite(" ", 1)
+
+def time_delay(interval):
+    INTERVAL = interval
+    current_time = datetime.now()
+    if current_time.minute % INTERVAL != 0:
+        time_minute = current_time.minute - current_time.minute % INTERVAL + INTERVAL
+        if time_minute == 60:
+            tmp_time = current_time.replace(hour=(current_time.hour + 1), minute=0, second=0)
+        else:
+            tmp_time = current_time.replace(minute=time_minute, second=0)
+
+        del_time = tmp_time - current_time
+        sec = del_time.seconds
+        print("Time Delay :", sec) 
+        time.sleep(sec)
+    else:
+        print(current_time)
