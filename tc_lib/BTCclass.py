@@ -25,10 +25,13 @@ class TradeAI:
     #judge_coin : 코인의 매도, 매수를 결정
     def judge_coin(self):
         result = sum(self.maj_data)
+        half = len(self.maj_data)/2
+        print("half : ", half)
         self.maj_data.clear()
-        
+
         print("result:", result)
-        if result > (len(self.maj_data)/2):
+        #todo : 다수결보다 1개 더 기준을 높임
+        if result > half :
             return True
         else:
             return False

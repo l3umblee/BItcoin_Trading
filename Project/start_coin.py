@@ -30,30 +30,12 @@ start_time = time.time()
 
 schedule.every(30).seconds.do(trador.predict_data)
 schedule.every(5).minutes.do(prevent_off)
-cnt = 0
+schedule.every(10).minutes.do(trading, trador, tradingManager)
 
 tradingManager.show_balance()
 while True:
-    cnt += 1
     schedule.run_pending()
     time.sleep(1)
-
-    if cnt == 60*INTERVAL:
-        tradingManager.show_balance()
-        isOk = trador.judge_coin()
-
-        if tradingManager.isAsk == False and isOk: #매수하지 않은 상황, 오를 것이라 판단
-            tradingManager.buy_coin()
-            print("<<buy coin>>")    
-        elif tradingManager.isAsk:
-            tradingManager.sell_coin()
-            print("<<sell coin>>")
-            
-        cnt = 0
-        tradingManager.show_balance()
-        print(tradingManager.isAsk)
-        print(datetime.now())
-        print("-"*30)
 
     stop_time = time.time() - start_time
     if stop_time >= 180*60:

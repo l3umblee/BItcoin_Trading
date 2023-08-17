@@ -169,3 +169,25 @@ def time_delay(interval):
         time.sleep(sec)
     else:
         print(current_time)
+
+#trading : 10분마다 매수/매도
+def trading(tAI, trM):
+    tradorAI = tAI
+    tradingM = trM
+
+    tradingM.show_balance()
+    isOk = tradorAI.judge_coin()
+
+    if tradingM.isAsk == False and isOk:
+        tradingM.buy_coin()
+        print("<<buy coin>>")
+    elif tradingM.isAsk and isOk == False: #매수한 상황, 더 오르지 않을 것이라 판단
+        tradingM.sell_coin()
+        print("<<sell coin>>")
+    else:
+        print("<<nothing...>>")
+
+    tradingM.show_balance()
+    print(tradingM.isAsk)
+    print(datetime.now())
+    print("-"*30)

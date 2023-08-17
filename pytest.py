@@ -6,4 +6,12 @@ import schedule
 from tc_lib.common import *
 from tc_lib.BTCclass import *
 import tensorflow as tf
-print(tf.__version__)
+
+def test(a, b):
+    x = a
+    y = b
+    print(x+y)
+
+schedule.every(5).seconds.do(test, 2, 3)
+while True:  
+    schedule.run_pending()
