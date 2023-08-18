@@ -38,7 +38,7 @@ while True:
     time.sleep(1)
 
     stop_time = time.time() - start_time
-    if stop_time >= 180*60:
+    if stop_time >= 240*60:
         break
 
 print("End Program")

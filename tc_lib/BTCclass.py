@@ -66,17 +66,6 @@ class TradingManager:
         bid_ask = bids_ask[1] #한 단계 위의 매도 호가
         ask_price = bid_ask['ask_price'] #매도 호가
         
-        # candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
-        # open_price = candle.iat[0, 0] #candle 중 시가 
-
-        #매도호가와 시가 중 낮은 것 결정
-        # if ask_price < open_price:
-        #     print("choose ask_price!")
-        #     self.sell_price = ask_price
-        # else:
-        #     print("choose open_price!")
-        #     self.sell_price = open_price
-        
         self.sell_price = ask_price
 
         self.unit = KRW / self.sell_price
@@ -102,10 +91,6 @@ class TradingManager:
         ask_price = bid_ask['bid_price'] #매수 호가
 
         self.sell_price = ask_price
-
-        # candle, cur_price = get_candle_cur(self.ticker) #candle과 현재가
-        # open_price = candle.iat[0, 0] #candle 중 시가
-        # self.sell_price = open_price
 
         ret = self.upbit.sell_limit_order(self.ticker, self.sell_price,self.unit)
         print(ret)

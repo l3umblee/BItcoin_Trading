@@ -151,7 +151,6 @@ def prevent_off():
         ran_h = random.randint(1, screenH)
 
         pyautogui.moveTo(ran_w, ran_h, 0.3)
-        pyautogui.typewrite(" ", 1)
 
 def time_delay(interval):
     INTERVAL = interval
@@ -181,7 +180,7 @@ def trading(tAI, trM):
     if tradingM.isAsk == False and isOk:
         tradingM.buy_coin()
         print("<<buy coin>>")
-    elif tradingM.isAsk and isOk == False: #매수한 상황, 더 오르지 않을 것이라 판단
+    elif tradingM.isAsk: #매수한 상황
         tradingM.sell_coin()
         print("<<sell coin>>")
     else:
