@@ -151,6 +151,7 @@ def prevent_off():
         ran_h = random.randint(1, screenH)
 
         pyautogui.moveTo(ran_w, ran_h, 0.3)
+        pyautogui.typewrite(" ")
 
 def time_delay(interval):
     INTERVAL = interval
