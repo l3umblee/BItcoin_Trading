@@ -7,7 +7,8 @@ from tc_lib.common import *
 
 #TradingAI : 매수/매도를 결정하는 CNN model 클래스
 class TradeAI:
-    def __init__(self, model):
+    def __init__(self, model, ticker):
+        self.ticker = ticker
         self.model = model
         self.maj_data = list()
 
@@ -15,7 +16,8 @@ class TradeAI:
     def predict_data(self): 
         dimension = 48
 
-        x_input = get_cur_data(dimension)
+        #x_input = get_cur_data(self.ticker, dimension)
+        x_input = get_cur_data_vol(self.ticker, dimension)
         x_input = x_input.reshape(1, dimension, dimension, 3)
 
         y_input = self.model.predict(x_input)

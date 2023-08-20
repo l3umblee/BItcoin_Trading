@@ -13,7 +13,7 @@ tmp_date = start_date
 
 INTERVAL_HOUR = 1
 
-ticker = "KRW-KNC"
+ticker = "KRW-HIFI"
 file_path = "dataset/bitcoindata.csv"
 file_name = "bitcoindata.csv"
 
