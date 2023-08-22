@@ -13,8 +13,8 @@ inputs = "dataset/bitcoindata.csv"
 seq_len = 6
 dimension = 48
 
-#figures, labels = get_coindata(inputs, seq_len, dimension)
-figures, labels = get_coindata_vol(inputs, seq_len, dimension)
+figures, labels = get_coindata(inputs, seq_len, dimension)
+# figures, labels = get_coindata_vol(inputs, seq_len, dimension)
 
 figures = figures/255.0
 print(np.shape(labels), np.shape(figures))
@@ -51,4 +51,4 @@ model.compile(optimizer=Adam(learning_rate=1.0e-4), loss='binary_crossentropy', 
 
 model.fit(x_train, y_train, batch_size=batch_size, epochs=num_epochs)
 
-model.save('my_model2.h5', overwrite=True)
+model.save('my_model.h5', overwrite=True)

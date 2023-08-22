@@ -8,6 +8,7 @@ import pyupbit
 import pyautogui
 import random
 import time
+import requests
 from tqdm import tqdm
 from mplfinance.original_flavor import candlestick2_ochl
 from datetime import datetime
@@ -315,3 +316,19 @@ def trading(tAI, trM):
     print(tradingM.isAsk)
     print(datetime.now())
     print("-"*30)
+
+def get_bittickers():
+    url = "https://api.upbit.com/v1/market/all?isDetails=false"
+
+    headers = {"accept": "application/json"}
+
+    response = requests.get(url, headers=headers)
+
+    ticker_list = response.json()
+
+    tickers = list()
+    for ticker in ticker_list:
+        if 'KRW' in ticker['market']:
+            tickers.append(ticker['market'])
+
+    return tickers

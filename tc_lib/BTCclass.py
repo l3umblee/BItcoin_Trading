@@ -16,8 +16,8 @@ class TradeAI:
     def predict_data(self): 
         dimension = 48
 
-        #x_input = get_cur_data(self.ticker, dimension)
-        x_input = get_cur_data_vol(self.ticker, dimension)
+        x_input = get_cur_data(self.ticker, dimension)
+        # x_input = get_cur_data_vol(self.ticker, dimension)
         x_input = x_input.reshape(1, dimension, dimension, 3)
 
         y_input = self.model.predict(x_input)
@@ -40,7 +40,7 @@ class TradeAI:
 
 #TradingManager : 매도/매수/주문취소를 실행하는 클래스
 class TradingManager:
-    def __init__(self, ticker):
+    def __init__(self, ticker='KRW-BTC'):
         self.access_key = ""
         self.secret_key = ""
         self.upbit = pyupbit.Upbit(self.access_key, self.secret_key)
@@ -120,3 +120,27 @@ class TradingManager:
                     self.isAsk = True
         else:
             self.isAsk = False
+
+class UPreminder:
+    def __init__(self):
+        self.access_key = ""
+        self.secret_key = ""
+
+        self.upbit = pyupbit.Upbit(self.access_key, self.secret_key)
+        self.tickers = get_bittickers()
+        self.upticker = list()
+
+    def crawl_data(self):
+        cur_time = datetime.now()
+        for ticker in self.tickers:
+            params = {"ticker":ticker, "interval":"minute1", "count":5, "to":cur_time}
+            candles = pyupbit.get_ohlcv(ticker=params['ticker'], interval=params['interval'], count=params['count'], to=cur_time)
+            time.sleep(1)
+            
+            volumes = candles['volume']
+            closes = candles['close']
+            if (volumes[-1] == max(volumes)) and (closes[-1] == max(closes)):
+                self.upticker.append(ticker)
+
+    def get_uptickers(self):
+        print(self.upticker)

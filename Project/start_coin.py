@@ -17,7 +17,7 @@ if search_model() == False:
     os.system('train_model.py')
 
 print("loading model...")
-model = load_model('my_model2.h5', compile=False)
+model = load_model('my_model.h5', compile=False)
 
 trador = TradeAI(model, ticker)
 tradingManager = TradingManager(ticker)
